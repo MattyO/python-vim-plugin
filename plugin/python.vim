@@ -8,8 +8,16 @@ plugin_root_dir = vim.eval('s:plugin_root_dir')
 python_root_dir = normpath(join(plugin_root_dir, '..', 'python'))
 sys.path.insert(0, python_root_dir)
 import sample
+
 EOF
-function! PrintHello()
-    python3 sample.print_hello()
+
+function! RunTests()
+    python3 sample.run_command(sample.test_command())
 endfunction
-command! -nargs=0 PrintHello call PrintCountry()
+
+function! RunCommand(com)
+    python3 sample.run_command(vim.eval('a:com'))
+endfunction
+
+command! -nargs=1 RunCommand call RunCommand()
+command! -nargs=0 RunTests call RunTests()
