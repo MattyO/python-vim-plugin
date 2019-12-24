@@ -23,7 +23,6 @@ def create_sign():
 #∅
 #⊝
 #❎
-
     vim.command('sign define CoverageCross text=❌ texthl=Coverage')
 
 def signs_defined_text():
