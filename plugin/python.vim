@@ -11,8 +11,12 @@ import sample
 
 EOF
 
-function! RunTests()
-    python3 sample.run_command(sample.test_command())
+function! RunsSingleTest()
+    python3 sample.run_command(sample.test_command('single'))
+endfunction
+
+function! RunAllTests()
+    python3 sample.run_command(sample.test_command('all'))
 endfunction
 
 function! RunCommand(com)
@@ -20,4 +24,5 @@ function! RunCommand(com)
 endfunction
 
 command! -nargs=1 RunCommand call RunCommand()
-command! -nargs=0 RunTests call RunTests()
+command! -nargs=0 RunsSingleTest call RunsSingleTest()
+command! -nargs=0 RunAllTests call RunAllTests()

@@ -23,7 +23,10 @@ def file_test_method_and_class(file_path, line_num):
         line_num  -=1
     return (test_class, test_method)
 
-def test_command():
+def test_command(num_string):
+    if num_string == 'all':
+        return "python -m unittest discover"
+
     test_command_string = "python -m unittest discover"
     full_file_path = vim.eval("expand('%:p')")
     file_parts = full_file_path.split("/")
