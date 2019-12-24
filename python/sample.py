@@ -3,9 +3,60 @@ import xmlrpc.client
 import os.path
 import re
 import linecache
+import json
 
-class Test:
-    pass
+###COVERAGE###
+#--- Signs ---
+#Signs for plugin/python.vim:
+#      line=23  id=3  name=cross
+
+def get_current_sign_ids():
+    missing_lines = []
+    abs_current_file = "/".join(project_directory_parts())
+    sign_text = vim.command("sign place file=" + abs_current_file)
+    
+    results = re.finditer("^\s*line=(\w*)\s*id=(\w*)\s*name=(\w*)\s*$", sign_text,)
+    return [ m.group(1) for m in results]
+
+def create_sign():
+#❌
+#∅
+#⊝
+#❎
+
+    vim.command('sign define CoverageCross text=❌ texthl=Coverage')
+
+def signs_defined_text():
+    return vim.command("sign list")
+
+def is_sign_defined():
+    sign_definition = "sign CoverageCross  text=❌ texthl=Coverage"
+    return sign_definition in signs_defined_text()
+
+def get_sign_lines():
+    missing_lines = []
+    abs_dir_list, local_dir_list, file_name = project_directory_parts()
+    coverage_location = "/".join(abs_dir_list + ['coverage.json'])
+    if not os.path.exists(coverage_location):
+        return ""
+
+    report_key = "/".join(local_dir_list+[file_name])
+    with open(coverage_location) as f:
+        report = json.loads(f.read())
+        missing_lines = report['files'].get(report_key, {'missing_lines': []})['missing_lines']
+
+    return missing_lines
+
+
+def create_signs_in_file(line_nums):
+    abs_current_file = current_full_file_path()
+    for i, line_num in enumerate(line_nums):
+        c = "sign place {} line={} name=CoverageCross file={}".format( 
+                8000 + i,
+                line_num,
+                abs_current_file)
+
+        vim.command(c)
 
 def file_test_method_and_class(file_path, line_num):
     test_class = None
@@ -23,38 +74,41 @@ def file_test_method_and_class(file_path, line_num):
         line_num  -=1
     return (test_class, test_method)
 
-def test_command(num_string):
-    if num_string == 'all':
-        return "python -m unittest discover"
+def current_full_file_path():
+    return vim.eval("expand('%:p')")
 
-    test_command_string = "python -m unittest discover"
-    full_file_path = vim.eval("expand('%:p')")
+def project_directory_parts():
+    full_file_path = current_full_file_path() 
     file_parts = full_file_path.split("/")
     file_name = file_parts.pop()
     local_parts = []
     row, col = vim.current.window.cursor
-    #current_line = vim.current.buffer[row-1]
 
     while len(file_parts)> 0:
         if(os.path.exists("/".join(file_parts + ['.git']))):
             break
         local_parts.append(file_parts.pop())
 
-    print("/".join(local_parts))
-    print(file_name)
+    return (file_parts, local_parts, file_name)
+
+def test_command(num_string):
+    if num_string == 'all':
+        return "python -m unittest discover"
+    test_command_string = "python -m unittest discover"
+
+    abs_dir_list, local_dir_list, file_name = project_directory_parts()
+    row, col = vim.current.window.cursor
+    #current_line = vim.current.buffer[row-1]
 
     file_name_without_extension = re.sub('\.py$', '', file_name)
     if file_name.startswith("test"):
-        test_class, test_method = file_test_method_and_class("/".join(local_parts + [file_name]), row)
-        test_command_string = "python -m unittest " +  ".".join(local_parts + [file_name_without_extension] +[test_class, test_method])
+        test_class, test_method = file_test_method_and_class("/".join(local_dir_list+ [file_name]), row)
+        test_command_string = "python -m unittest " +  ".".join(local_dir_list + [file_name_without_extension] +[test_class, test_method])
     elif file_name.endswith(".py"):
-        test_command_string = "python -m unittest " +  ".".join(['tests'] + local_parts + ["test_" + file_name_without_extension])
-
-    print(test_command_string)
+        test_command_string = "python -m unittest " +  ".".join(['tests'] + local_dir_list  + ["test_" + file_name_without_extension])
 
     return test_command_string
 
 def  run_command(c):
     with xmlrpc.client.ServerProxy("http://localhost:4000/", allow_none=True) as proxy:
-        print(c)
         proxy.run_command(c)

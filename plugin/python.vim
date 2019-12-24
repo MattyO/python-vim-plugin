@@ -26,3 +26,7 @@ endfunction
 command! -nargs=1 RunCommand call RunCommand()
 command! -nargs=0 RunsSingleTest call RunsSingleTest()
 command! -nargs=0 RunAllTests call RunAllTests()
+
+
+python3 sample.create_sign()
+au BufReadPost *.py python3 sample.create_signs_in_file(sample.get_sign_lines())
