@@ -6,10 +6,6 @@ import linecache
 import json
 
 ###COVERAGE###
-#--- Signs ---
-#Signs for plugin/python.vim:
-#      line=23  id=3  name=cross
-
 def get_current_sign_ids():
     missing_lines = []
     abs_current_file = "/".join(project_directory_parts())
@@ -62,6 +58,11 @@ def file_test_method_and_class(file_path, line_num):
     test_method = None
     search_function = re.compile("def (test_\S*)\(.*\):")
     search_class = re.compile("class ([A-Z].*)\(.*TestCase.*\):")
+
+    first_line = linecache.getline(file_path, line_num).strip()
+    if first_line.startswith("class"):
+        return (search_class.search(first_line ).group(1), None)
+
     while line_num > 0 and (test_class is None or test_method is None):
 
         line = linecache.getline(file_path, line_num).strip()
@@ -102,7 +103,11 @@ def test_command(num_string):
     file_name_without_extension = re.sub('\.py$', '', file_name)
     if file_name.startswith("test"):
         test_class, test_method = file_test_method_and_class("/".join(local_dir_list+ [file_name]), row)
-        test_command_string = "python -m unittest " +  ".".join(local_dir_list + [file_name_without_extension] +[test_class, test_method])
+        test_parts = local_dir_list + [file_name_without_extension] +[test_class, test_method]
+        test_parts = filter(lambda p: p is not None, test_parts )
+
+        test_command_string = "python -m unittest " +  ".".join(test_parts)
+
     elif file_name.endswith(".py"):
         test_command_string = "python -m unittest " +  ".".join(['tests'] + local_dir_list  + ["test_" + file_name_without_extension])
 
