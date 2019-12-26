@@ -87,8 +87,7 @@ def project_directory_parts():
     while len(file_parts)> 0:
         if(os.path.exists("/".join(file_parts + ['.git']))):
             break
-        local_parts.append(file_parts.pop())
-
+        local_parts.insert(0, file_parts.pop())
     return (file_parts, local_parts, file_name)
 
 def test_command(num_string):
