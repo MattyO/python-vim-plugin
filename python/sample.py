@@ -4,6 +4,7 @@ import os.path
 import re
 import linecache
 import json
+import sys
 
 ###COVERAGE###
 def get_current_sign_ids():
@@ -91,11 +92,14 @@ def project_directory_parts():
     return (file_parts, local_parts, file_name)
 
 def test_command(num_string):
-    if num_string == 'all':
-        return "python -m unittest discover"
-    test_command_string = "python -m unittest discover"
-
     abs_dir_list, local_dir_list, file_name = project_directory_parts()
+    python_exe = "/".join(abs_dir_list + ['env', 'bin', 'python'])
+
+    if num_string == 'all':
+        return python_exe + " -m unittest discover"
+
+    test_command_string = python_exe + " -m unittest discover"
+
     row, col = vim.current.window.cursor
     #current_line = vim.current.buffer[row-1]
 
@@ -105,13 +109,14 @@ def test_command(num_string):
         test_parts = local_dir_list + [file_name_without_extension] +[test_class, test_method]
         test_parts = filter(lambda p: p is not None, test_parts )
 
-        test_command_string = "python -m unittest " +  ".".join(test_parts)
+        test_command_string = python_exe + " -m unittest " +  ".".join(test_parts)
 
     elif file_name.endswith(".py"):
-        test_command_string = "python -m unittest " +  ".".join(['tests'] + local_dir_list  + ["test_" + file_name_without_extension])
+        test_command_string = python_exe +" -m unittest " +  ".".join(['tests'] + local_dir_list  + ["test_" + file_name_without_extension])
 
     return test_command_string
 
-def  run_command(c):
+def  run_command(c, directory=None ):
+    abs_parts, local_parts, file_name=project_directory_parts() 
     with xmlrpc.client.ServerProxy("http://localhost:4000/", allow_none=True) as proxy:
-        proxy.run_command(c)
+        proxy.run_command(c, "/".join(abs_parts) )

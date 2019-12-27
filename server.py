@@ -2,9 +2,10 @@ import os
 import subprocess
 from xmlrpc.server import SimpleXMLRPCServer
 
-def run_command(c):
+def run_command(c, directory=None):
     print("running command: " + c)
-    subprocess.Popen(c, shell=True, stdout=subprocess.PIPE)
+    print("in directory: " + directory)
+    subprocess.Popen(c, shell=True, stdout=subprocess.PIPE, cwd=directory)
     #os.system(c)
     return ""
 
