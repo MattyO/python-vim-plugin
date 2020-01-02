@@ -29,6 +29,11 @@ def is_sign_defined():
     sign_definition = "sign CoverageCross  text=❌ texthl=Coverage"
     return sign_definition in signs_defined_text()
 
+def is_file_in_project_directory(file_path):
+    abs_dir_list, local_dir_list, file_name = project_directory_parts()
+    full_file_path = "/".join(abs_dir_list + file_path.split("/"))
+    return (os.path.exists(full_file_path), full_file_path)
+
 def get_sign_lines():
     missing_lines = []
     abs_dir_list, local_dir_list, file_name = project_directory_parts()
@@ -95,6 +100,11 @@ def project_directory_parts():
 def test_command(num_string):
     abs_dir_list, local_dir_list, file_name = project_directory_parts()
     python_exe = "/".join(abs_dir_list + ['env', 'bin', 'python'])
+    is_dockerfile_in_directory, dockerfile_path = is_file_in_project_directory("Dockerfile")
+    de = 'docker exec -ti'
+
+    if is_dockerfile_in_directory:
+        python_exe = de + " {} /venv/bin/python".format(abs_dir_list[-1])
 
     if num_string == 'all':
         return python_exe + " -m unittest discover"
@@ -114,6 +124,8 @@ def test_command(num_string):
 
     elif file_name.endswith(".py"):
         test_command_string = python_exe +" -m unittest " +  ".".join(['tests'] + local_dir_list  + ["test_" + file_name_without_extension])
+
+    print(test_command_string)
 
     return test_command_string
 
