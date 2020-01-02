@@ -60,6 +60,7 @@ def file_test_method_and_class(file_path, line_num):
     search_function = re.compile("def (test_\S*)\(.*\):")
     search_class = re.compile("class ([A-Z].*)\(.*TestCase.*\):")
 
+    linecache.checkcache(file_path)
     first_line = linecache.getline(file_path, line_num).strip()
     if first_line.startswith("class"):
         return (search_class.search(first_line ).group(1), None)
