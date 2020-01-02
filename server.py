@@ -12,13 +12,9 @@ def run_command(c, directory=None):
     print("reading outs from communicate method")
     d = errs.decode('utf-8')
     longest_line = max( len(l) for l in d.split("\n") if re.match("[-]+", l))
-    print(longest_line)
     d = re.sub("OK", "\033[42m\033[30m{}\033[00m".format("OK".ljust(longest_line)), d)
     d = re.sub("FAILED(.*)\n", r"\033[41m\033[37m{}\1\n\033[00m".format("FAIL".ljust(longest_line)), d)
     print(d)
-    #"\033[92m{}\033[00m
-    
-    #os.system(c)
     return ""
 
 server = SimpleXMLRPCServer(("localhost", 4000), logRequests=False)
