@@ -125,8 +125,6 @@ def test_command(num_string):
     elif file_name.endswith(".py"):
         test_command_string = python_exe +" -m unittest " +  ".".join(['tests'] + local_dir_list  + ["test_" + file_name_without_extension])
 
-    print(test_command_string)
-
     return test_command_string
 
 def  run_command(c, directory=None ):
