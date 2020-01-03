@@ -42,7 +42,7 @@ def run_command(c, directory=None):
 
         if not buffering_line and len(buffered) >= 1:
             buffered = re.sub("OK", "\033[42m\033[30m{}\033[00m".format("OK".ljust(longest_line)), buffered )
-            buffered  = re.sub("FAILED(.*)\n", r"\033[41m\033[37m{}\1\n\033[00m".format("FAILED".ljust(longest_line)), buffered )
+            buffered  = re.sub("FAILED(.*)\n", r"\033[41m\033[37m{}\1\033[00m\n".format("FAILED".ljust(longest_line)), buffered )
             sys.stdout.write(buffered)
             buffered = ""
         elif not buffering_line:
@@ -53,6 +53,11 @@ def run_command(c, directory=None):
             buffering_line = True
 
         #longest_line = max([len(l) for l in data.encode("utf-8").split("\n") if re.match("[-]+", l)] + [0])
+    the_rest = p.stdout.read().decode("utf-8")
+    the_rest = re.sub("OK", "\033[42m\033[30m{}\033[00m".format("OK".ljust(longest_line)), the_rest )
+    the_rest  = re.sub("FAILED(.*)\n", r"\033[41m\033[37m{}\1\033[00m\n".format("FAILED".ljust(longest_line)), the_rest )
+    sys.stdout.write(the_rest)
+    sys.stdout.flush()
 
     return ""
 
