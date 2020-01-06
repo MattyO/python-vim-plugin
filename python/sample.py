@@ -59,6 +59,28 @@ def create_signs_in_file(line_nums):
 
         vim.command(c)
 
+
+####Create Init files#####
+def create_inits():
+    abs_dir_list, local_dir_list, file_name = project_directory_parts()
+    new_dir_list = []
+    is_python_file = file_name.endswith(".py")
+
+    while len(local_dir_list) != 0:
+        next_dir = local_dir_list.pop(0)
+        new_dir_list.append(next_dir)
+        possible_directory = "/".join(abs_dir_list + new_dir_list)
+        possible_init_file = "/".join(abs_dir_list + new_dir_list + [ '__init__.py'])
+
+        if not os.path.isdir(possible_directory):
+            os.mkdir(possible_directory)
+
+        print(possible_init_file)
+        if not os.path.exists(possible_init_file) and is_python_file:
+            print('trying to create file ' + possible_init_file)
+            open(possible_init_file, 'w').close()
+
+####TEST COMMANDS#####
 def file_test_method_and_class(file_path, line_num):
     test_class = None
     test_method = None

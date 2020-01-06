@@ -27,10 +27,15 @@ function! RunCommand(com)
     python3 sample.run_command(vim.eval('a:com'))
 endfunction
 
+function! CreateInits()
+    python3 sample.create_inits()
+endfunction
+
 command! -nargs=1 RunCommand call RunCommand()
 command! -nargs=0 RunsSingleTest call RunsSingleTest()
 command! -nargs=0 RunAllTests call RunAllTests()
 command! -nargs=0 RunCoverage call RunCoverage()
+command! -nargs=0 CreateInits call CreateInits()
 
 
 
