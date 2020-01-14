@@ -17,6 +17,7 @@ signal.signal(signal.SIGINT, handle_signal)
 
 processes.append(multiprocessing.Process(target=directory_runner.run_watcher_forever))
 processes.append(multiprocessing.Process(target=server.run_server_forever))
+
 for process in processes:
     process.start()
 
