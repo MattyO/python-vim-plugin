@@ -7,7 +7,8 @@ import re
 import time
 import sys
 
-COMMAND_DIRECTORY = 'commands'
+
+COMMAND_DIRECTORY = os.path.join(os.path.dirname(__file__), 'commands')
 
 if not os.path.exists(COMMAND_DIRECTORY):
     os.mkdir(COMMAND_DIRECTORY)
