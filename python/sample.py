@@ -75,7 +75,6 @@ def create_inits():
         if not os.path.isdir(possible_directory):
             os.mkdir(possible_directory)
 
-        print(possible_init_file)
         if not os.path.exists(possible_init_file) and is_python_file:
             print('trying to create file ' + possible_init_file)
             open(possible_init_file, 'w').close()
@@ -95,7 +94,7 @@ def file_test_method_and_class(file_path, line_num):
     while line_num > 0 and (test_class is None or test_method is None):
 
         line = linecache.getline(file_path, line_num).strip()
-        if line.startswith("def test_"):
+        if test_method is None and line.startswith("def test_"):
             test_method = search_function.search(line).group(1)
         if line.startswith("class"):
             test_class = search_class.search(line).group(1)
