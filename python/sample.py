@@ -20,13 +20,13 @@ def create_sign():
 #∅
 #⊝
 #❎
-    vim.command('sign define CoverageCross text=❌ texthl=Coverage')
+    vim.command('sign define CoverageCross text=❎ texthl=Coverage')
 
 def signs_defined_text():
     return vim.command("sign list")
 
 def is_sign_defined():
-    sign_definition = "sign CoverageCross  text=❌ texthl=Coverage"
+    sign_definition = "sign CoverageCross  text=❎ texthl=Coverage"
     return sign_definition in signs_defined_text()
 
 def is_file_in_project_directory(file_path):

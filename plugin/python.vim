@@ -20,7 +20,7 @@ function! RunAllTests()
 endfunction
 
 function! RunCoverage()
-    python3 sample.run_command("coverage run --omit=env/*,tests/* ./test.py && coverage json")
+    python3 sample.run_command("coverage run --omit=env/*,tests/* -m unittest discover -v && coverage json")
 endfunction
 
 function! RunCommand(com)
