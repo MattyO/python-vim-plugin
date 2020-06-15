@@ -11,3 +11,6 @@ class ExampleClass(object):
 
         return foo()
 
+def zed():
+    pass
+
