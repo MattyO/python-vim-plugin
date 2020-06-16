@@ -1,10 +1,10 @@
 import unittest
 import python.overview
 
-class Class_overviewTest(unittest.TestCase):
+class OverviewTest(unittest.TestCase):
     def setUp(self):
-        self.overview = python.overview.class_overview('/home/matty/.vim/bundle/python/tests/data/example_class.py')
-        pass
+        self.overview_class = python.overview.Overview('/home/matty/.vim/bundle/python/tests/data/example_class.py') 
+        self.overview = self.overview_class.class_overview()
 
     def test_class_overview_has_class_name(self):
         self.assertTrue('ExampleClass' in self.overview)
@@ -31,4 +31,14 @@ class Class_overviewTest(unittest.TestCase):
     def test_class_has_end(self):
         self.assertEqual(self.overview['ExampleClass']['end'], 13)
 
+    def test_has_method(self):
+        self.assertTrue(self.overview_class.has_method('ExampleClass', 'foo'))
+        self.assertTrue(self.overview_class.has_method('ExampleClass', 'special'))
 
+        self.assertFalse(self.overview_class.has_method('ExampleClass', 'nothere'))
+        self.assertFalse(self.overview_class.has_method('Foo', 'nothere'))
+        
+    def test_has_method_takes_regex_pattern(self):
+        self.assertTrue(self.overview_class.has_method('ExampleClass', 'f*'))
+        self.assertTrue(self.overview_class.has_method('ExampleClass', 'spec.al'))
+        self.assertFalse(self.overview_class.has_method('ExampleClass', 'spec.alzed'))
