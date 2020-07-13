@@ -1,5 +1,3 @@
-import unittest
-
 class {{class_name|camel}}Test(unittest.TestCase):
     def setUp(self):
         pass

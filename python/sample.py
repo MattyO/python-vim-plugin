@@ -183,13 +183,13 @@ def create_templated_test_file():
     if not os.path.exists(full_test_file_folder_path):
         Path(full_test_file_folder_path).touch()
 
+    src_file_overview = overview.Overview("/".join(local_dir_list+ [file_name]))
 
     row, col = vim.current.window.cursor
     file_name_without_extension = re.sub('\.py$', '', file_name)
 
-    class_name, method_name = find_method_and_class("/".join(local_dir_list+ [file_name]), row)
-    print(class_name)
-    print(method_name)
+    class_name, method_name = src_file_overview.class_and_method_names(row)
+
     if class_name is None:
         class_name = method_name 
 
@@ -203,6 +203,9 @@ def create_templated_test_file():
 
     insert_line = 0
     if not os.path.exists(full_test_file_name):
+        with open(full_test_file_name) as f:
+            f.write("import unittest\n\n")
+
         Path(full_test_file_name).touch()
         template = env.get_template("test_case.py")
     else:
