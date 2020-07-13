@@ -154,59 +154,21 @@ def project_directory_parts():
     return (file_parts, local_parts, file_name)
 
 
+def insert_content(filename, contents, line_number=None):
 
-def modify_test_file():
-    abs_dir_list, local_dir_list, file_name = project_directory_parts()
-
-    test_file_name = os.path.join(*(['/'] + abs_dir_list + ['tests'] + local_dir_list + [ 'test_' + file_name]))
-    local_test_file_name = os.path.join(*['tests'] + local_dir_list + [ 'test_' + file_name])
-
-    row, col = vim.current.window.cursor
-    file_name_without_extension = re.sub('\.py$', '', file_name)
-
-    class_name, method_name = find_method_and_class("/".join(local_dir_list+ [file_name]), row)
-    if class_name is None:
-        class_name = method_name 
-
-    from jinja2 import Environment, FileSystemLoader, select_autoescape
-    env = Environment(
-        loader=FileSystemLoader('/home/matty/.vim/bundle/python/templates/'),
-    )
-
-    env.filters['camel'] = slugify.camel
-    env.filters['snake'] = slugify.snake
-
-    template = env.get_template("test_case_function.py")
-
-    overview_dict = overview.class_overview(test_file_name)
-
-    test_method_name = None
-    test_method_increment = 2
-    test_class = slugify.camel(class_name) + "Test"
-    while test_method_name is None:
-
-        possible_test_method_name = "test_" + method_name + "_" + str(test_method_increment)
-        if possible_test_method_name not in overview_dict[test_class]['functions'].keys():
-            test_method_name  = possible_test_method_name
-        test_method_increment += 1
-
-    new_test_function_text = template.render({
-        'function_name': test_method_name
-    })
-
-
-    if slugify.camel(class_name) + "Test" in overview_dict.keys():
-        f = open(test_file_name, 'r')
+    with  open(filename, 'r') as f:
         old_file_lines = f.readlines()
         f.close()
 
-        new_file_contents = "".join(old_file_lines + ["\n"] + [line + "\n" for line in new_test_function_text.split("\n")])
-        with open(test_file_name, 'w') as f:
-            f.write(new_file_contents)
-    else: #add to end of file
-        return
+    if line_number is None or line_number > len(old_file_lines):
+        line_number = len(old_file_lines)
 
-    return local_test_file_name, len(old_file_lines)
+    formated_contents = [line + "\n" for line in contents.split("\n")] + ["\n"]
+    new_file_lines = old_file_lines[:line_number] + formated_contents + old_file_lines[line_number:]
+
+    with open(filename, 'w') as f:
+        f.writelines(new_file_lines)
+
 
 def create_templated_test_file():
     abs_dir_list, local_dir_list, file_name = project_directory_parts()
@@ -237,21 +199,35 @@ def create_templated_test_file():
     env.filters['camel'] = slugify.camel
     env.filters['snake'] = slugify.snake
 
-    template = env.get_template("test_case.py")
+    insert_line = 0
+    if not os.path.exists(full_test_file_name):
+        Path(full_test_file_name).touch()
+        template = env.get_template("test_case.py")
+    else:
+        o = overview.Overview(full_test_file_name)
+        test_class_name = slugify.camel(f'{class_name}-test')
+
+        if test_class_name  not in o.class_overview():
+            template = env.get_template("test_case.py")
+        else:
+            template = env.get_template("test_case_function.py")
+            method_match_lines = o.match_methods(test_class_name, method_name)
+
+            insert_line = next(iter(method_match_lines), 0)
+            print(insert_line)
+            if insert_line != 0:
+                insert_line  -= 1
+
+
     test_file_contents = template.render({
         'class_name': class_name,
         'function_name': method_name
     })
 
-    if not os.path.exists(full_test_file_name):
-        with open(test_file_name, 'w') as f:
-            f.write(test_file_contents)
 
-        return local_test_file_name, 0
-    else:
-        return modify_test_file()
+    insert_content(full_test_file_name, test_file_contents, insert_line)
 
-
+    return local_test_file_name, insert_line
 
 
 def test_command(num_string):

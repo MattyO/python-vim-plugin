@@ -5,17 +5,18 @@ class Overview():
     def __init__(self, filepath):
         self.filepath = filepath
         overview_dict = None
-        
-    def has_method(self, class_name, method_pattern):
-        if class_name not in  self.overview_dict.keys():
-            return False
 
-        for method_name in self.overview_dict[class_name]['functions'].keys():
-            if re.compile(method_pattern).search(method_name) is not None:
-                return True
+    def match_methods(self, class_name, method_pattern):
+        def matches(pattern, method_name):
+            return re.compile(pattern).search(method_name) is not None
 
+        found_method_lines = []
 
-        return False
+        if class_name in  self.overview_dict.keys():
+            class_items = self.overview_dict[class_name]['functions'].items()
+            found_method_lines = [method_line for method_name, method_line in class_items if matches(method_pattern, method_name) ]
+
+        return sorted(found_method_lines, reverse=True)
 
 
     def class_overview(self):
