@@ -4,11 +4,21 @@ class Overview():
 
     def __init__(self, filepath):
         self.filepath = filepath
-        overview_dict = None
+        self.overview_dict = None
 
 
     def class_and_method_names(self, line_number):
-        pass
+        for obj_name, obj in self.class_overview().items():
+            if obj['start'] <= line_number <= obj['end']:
+                if obj['type'] == 'function':
+                    return (None, obj_name)
+                elif obj['type'] == 'class':
+                    for method_name, method_obj in obj['functions'].items():
+                        if method_obj['start'] <= line_number <= method_obj['end']:
+                            return (obj_name, method_name)
+
+        return (None, None)
+
 
     def match_methods(self, class_name, method_pattern):
         def matches(pattern, method_name):
@@ -24,6 +34,9 @@ class Overview():
 
 
     def class_overview(self):
+        if self.overview_dict is not None:
+            return self.overview_dict
+
         overview_dict = {}
         current_class_name = None
         search_function = re.compile("def (.*)\(.*\):")

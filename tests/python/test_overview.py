@@ -22,32 +22,41 @@ class OverviewTest(unittest.TestCase):
         self.assertTrue('special' in self.overview['ExampleClass']['functions'])
 
     def test_class_overview_method_start(self):
-        self.assertEqual(self.overview['ExampleClass']['functions']['foo']['start'], 2)
-        self.assertEqual(self.overview['ExampleClass']['functions']['special']['start'], 8)
+        self.assertEqual(self.overview['ExampleClass']['functions']['foo']['start'], 5)
+        self.assertEqual(self.overview['ExampleClass']['functions']['special']['start'], 11)
 
     def test_class_overview_method_end(self):
-        self.assertEqual(self.overview['ExampleClass']['functions']['foo']['end'], 4)
-        self.assertEqual(self.overview['ExampleClass']['functions']['special']['end'], 13)
+        self.assertEqual(self.overview['ExampleClass']['functions']['foo']['end'], 7)
+        self.assertEqual(self.overview['ExampleClass']['functions']['special']['end'], 16)
 
     def test_class_has_start(self):
-        self.assertEqual(self.overview['ExampleClass']['start'], 1)
+        self.assertEqual(self.overview['ExampleClass']['start'], 4)
 
     def test_class_has_end(self):
-        self.assertEqual(self.overview['ExampleClass']['end'], 13)
+        self.assertEqual(self.overview['ExampleClass']['end'], 16)
 
     def test_match_methods(self):
-        self.assertEquals(self.overview_class.match_methods('ExampleClass', 'foo'), [2])
-        self.assertEquals(self.overview_class.match_methods('ExampleClass', 'special'), [8])
+        self.assertEquals(self.overview_class.match_methods('ExampleClass', 'foo'), [5])
+        self.assertEquals(self.overview_class.match_methods('ExampleClass', 'special'), [11])
 
         self.assertEquals(self.overview_class.match_methods('ExampleClass', 'nothere'), [])
         self.assertEquals(self.overview_class.match_methods('Foo', 'nothere'), [])
 
     def test_has_method_takes_regex_pattern(self):
-        self.assertEquals(self.overview_class.match_methods('ExampleClass', 'f*'), [8,5,2])
-        self.assertEquals(self.overview_class.match_methods('ExampleClass', 'spec.al'), [8])
+        self.assertEquals(self.overview_class.match_methods('ExampleClass', 'f*'), [11, 8, 5])
+        self.assertEquals(self.overview_class.match_methods('ExampleClass', 'spec.al'), [11])
         self.assertEquals(self.overview_class.match_methods('ExampleClass', 'spec.alzed'), [])
 
-    def test_the_whole_thing(self):
-        from pprint import pprint
-        pprint(self.overview_class.class_overview())
-        self.assertTrue(False)
+    def test_class_and_method_names(self):
+        self.assertEquals(self.overview_class.class_and_method_names(9), ('ExampleClass', 'bar'))
+        self.assertEquals(self.overview_class.class_and_method_names(8), ('ExampleClass', 'bar'))
+        self.assertEquals(self.overview_class.class_and_method_names(10), ('ExampleClass', 'bar'))
+        self.assertEquals(self.overview_class.class_and_method_names(13), ('ExampleClass', 'special'))
+
+        self.assertEquals(self.overview_class.class_and_method_names(2), (None, 'first'))
+        self.assertEquals(self.overview_class.class_and_method_names(18), (None, 'zed'))
+
+    #def test_the_whole_thing(self):
+    #    from pprint import pprint
+    #    pprint(self.overview_class.class_overview())
+    #    self.assertTrue(False)
