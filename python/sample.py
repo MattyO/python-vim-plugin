@@ -188,6 +188,8 @@ def create_templated_test_file():
     file_name_without_extension = re.sub('\.py$', '', file_name)
 
     class_name, method_name = find_method_and_class("/".join(local_dir_list+ [file_name]), row)
+    print(class_name)
+    print(method_name)
     if class_name is None:
         class_name = method_name 
 

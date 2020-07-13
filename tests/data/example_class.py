@@ -1,3 +1,6 @@
+def first():
+    pass
+
 class ExampleClass(object):
     def foo(self):
         return 'test'

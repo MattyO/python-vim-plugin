@@ -6,6 +6,10 @@ class Overview():
         self.filepath = filepath
         overview_dict = None
 
+
+    def class_and_method_names(self, line_number):
+        pass
+
     def match_methods(self, class_name, method_pattern):
         def matches(pattern, method_name):
             return re.compile(pattern).search(method_name) is not None
@@ -14,7 +18,7 @@ class Overview():
 
         if class_name in  self.overview_dict.keys():
             class_items = self.overview_dict[class_name]['functions'].items()
-            found_method_lines = [method_line for method_name, method_line in class_items if matches(method_pattern, method_name) ]
+            found_method_lines = [method_line['start'] for method_name, method_line in class_items if matches(method_pattern, method_name) ]
 
         return sorted(found_method_lines, reverse=True)
 
@@ -25,6 +29,7 @@ class Overview():
         search_function = re.compile("def (.*)\(.*\):")
         search_class = re.compile("class (.*)\(.*\):")
         indent_search = re.compile("^([\s]*)def")
+        current_object = None
 
         first_indent_text = None
 
@@ -35,10 +40,15 @@ class Overview():
         for i, line in enumerate(lines):
             if line.startswith("class"):
                 class_name = search_class.search(line).group(1)
-                overview_dict[class_name] = {'type': 'class', 'functions':{}, 'line': i + 1}
+                overview_dict[class_name] = {'type': 'class', 'functions':{}, 'start': i + 1}
 
                 if current_class_name != None:
                     overview_dict[current_class_name]['end'] = i
+
+                if current_object is not None:
+                    current_object['end'] = i
+                    current_object = None
+
                 current_class_name = class_name
 
             if line.strip().startswith("def"):
@@ -48,15 +58,28 @@ class Overview():
                     first_indent_text = indent_search.search(line).group(1)
 
                 if line.startswith(f'{first_indent_text}def'): # is method
-                    overview_dict[current_class_name]['functions'][function_name]= i + 1
+                    if current_object is not None:
+                        current_object['end'] = i
+
+                    current_object = {'start': i + 1 }
+                    overview_dict[current_class_name]['functions'][function_name] = current_object
 
                 elif line.startswith(f'def') : #is function
-                    overview_dict[current_class_name]['end'] = i
+                    if current_object is not None:
+                        current_object['end'] = i
+
+                    if current_class_name is not None: 
+                        overview_dict[current_class_name]['end'] = i
+
+                    current_object = { 'type': 'function', 'start': i + 1}
                     current_class_name = None
-                    overview_dict[function_name] = { 'type': 'function', 'line': i + 1}
+                    overview_dict[function_name] = current_object
 
         if current_class_name != None:
             overview_dict[current_class_name]['end'] = len(lines)
+
+        if current_object is not None:
+            current_object['end'] = len(lines)
 
 
         self.overview_dict = overview_dict
