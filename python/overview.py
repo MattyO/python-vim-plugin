@@ -5,6 +5,7 @@ class Overview():
     def __init__(self, filepath):
         self.filepath = filepath
         self.overview_dict = None
+        self.number_of_lines = 0
 
 
     def class_and_method_names(self, line_number):
@@ -28,10 +29,9 @@ class Overview():
 
         if class_name in  self.overview_dict.keys():
             class_items = self.overview_dict[class_name]['functions'].items()
-            found_method_lines = [method_line['start'] for method_name, method_line in class_items if matches(method_pattern, method_name) ]
+            found_method_lines = [method_line['end'] for method_name, method_line in class_items if matches(method_pattern, method_name) ]
 
         return sorted(found_method_lines, reverse=True)
-
 
     def class_overview(self):
         if self.overview_dict is not None:
@@ -95,6 +95,7 @@ class Overview():
             current_object['end'] = len(lines)
 
 
+        self.number_of_lines = len(lines)
         self.overview_dict = overview_dict
 
         return overview_dict
