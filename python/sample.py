@@ -176,12 +176,14 @@ def create_templated_test_file():
     full_test_file_name = os.path.join(*(['/'] + abs_dir_list + ['tests'] + local_dir_list + [ 'test_' + file_name]))
     full_test_file_folder_path = os.path.join(*(['/'] + abs_dir_list + ['tests'] + local_dir_list))
     local_test_file_name = os.path.join(*['tests'] + local_dir_list + [ 'test_' + file_name])
+    is_new_test_case = False
 
-    if not os.path.exists(full_test_file_folder_path):
-        os.makedirs(full_test_file_folder_path)
 
-    if not os.path.exists(full_test_file_folder_path):
-        Path(full_test_file_folder_path).touch()
+    Path(full_test_file_folder_path).mkdir(parents=True, exist_ok=True)
+    if not os.path.exists(full_test_file_name):
+        is_new_test_case = True
+        with open(full_test_file_name, 'w') as f:
+            f.write("import unittest\n\n")
 
     src_file_overview = overview.Overview("/".join(local_dir_list+ [file_name]))
 
@@ -202,11 +204,7 @@ def create_templated_test_file():
     env.filters['snake'] = slugify.snake
 
     insert_line = 0
-    if not os.path.exists(full_test_file_name):
-        with open(full_test_file_name) as f:
-            f.write("import unittest\n\n")
-
-        Path(full_test_file_name).touch()
+    if is_new_test_case:
         template = env.get_template("test_case.py")
     else:
         o = overview.Overview(full_test_file_name)

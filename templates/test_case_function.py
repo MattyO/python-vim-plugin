@@ -1,2 +1,2 @@
-    def test_{{function_name|snake}}(self):
+    def test_{{function_name|snake}}<cursor>(self):
         self.assertEqual(<cursor>)
