@@ -7,6 +7,9 @@ class Overview():
         self.overview_dict = None
         self.number_of_lines = 0
 
+        # TODO find a way to remove this
+        self.class_overview()
+
 
     def class_and_method_names(self, line_number):
         for obj_name, obj in self.class_overview().items():

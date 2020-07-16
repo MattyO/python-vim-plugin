@@ -203,17 +203,18 @@ def create_templated_test_file():
     env.filters['camel'] = slugify.camel
     env.filters['snake'] = slugify.snake
 
-    insert_line = 0 # end of file
+
+    o = overview.Overview(full_test_file_name)
+    insert_line = o.number_of_lines
 
     if is_new_test_case:
         template = env.get_template("test_case.py")
+        print(insert_line)
     else:
-        o = overview.Overview(full_test_file_name)
         test_class_name = slugify.camel(f'{class_name}-test')
 
         if test_class_name  not in o.class_overview():
             template = env.get_template("test_case.py")
-            insert_line = o.number_of_lines
         else:
             template = env.get_template("test_case_function.py")
             method_match_lines = o.match_methods(test_class_name, method_name)

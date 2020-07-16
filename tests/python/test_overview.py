@@ -56,6 +56,12 @@ class OverviewTest(unittest.TestCase):
         self.assertEquals(self.overview_class.class_and_method_names(2), (None, 'first'))
         self.assertEquals(self.overview_class.class_and_method_names(18), (None, 'zed'))
 
+    def test_number_of_lines(self):
+        o = python.overview.Overview('/home/matty/.vim/bundle/python/tests/data/empty_new_test_case.py')
+        o.class_overview()
+        self.assertEquals(o.number_of_lines, 3)
+
+
     #def test_the_whole_thing(self):
     #    from pprint import pprint
     #    pprint(self.overview_class.class_overview())
