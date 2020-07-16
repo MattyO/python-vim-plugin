@@ -209,7 +209,6 @@ def create_templated_test_file():
 
     if is_new_test_case:
         template = env.get_template("test_case.py")
-        print(insert_line)
     else:
         test_class_name = slugify.camel(f'{class_name}-test')
 

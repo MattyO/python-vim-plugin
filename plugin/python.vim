@@ -37,8 +37,6 @@ test_files_name, line_number = sample.create_templated_test_file()
 vim.command("let s:testFileName = '%s'"% test_files_name )
 vim.command("let s:testFileLineNumber= '%s'"% line_number )
 EOF
-	echo s:testFileName
-	echo s:testFileLineNumber
 
 	let s:windowNumber = win_findbuf(bufnr(s:testFileName))
 
@@ -57,7 +55,7 @@ command! -nargs=0 RunsSingleTest call RunsSingleTest()
 command! -nargs=0 RunAllTests call RunAllTests()
 command! -nargs=0 RunCoverage call RunCoverage()
 command! -nargs=0 CreateInits call CreateInits()
-command! -nargs=0 CreateTemplatedTestFile call CreateInits()
+command! -nargs=0 CreateTemplatedTestFile call CreateTemplatedTestFile()
 
 
 

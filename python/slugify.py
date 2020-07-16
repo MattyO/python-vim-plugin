@@ -18,7 +18,6 @@ def text_parts(text):
     accum = []
     skip_next = False
     pw = list(pairwise(t))
-    print(pw)
     for i, (one, two) in enumerate(pw):
         if skip_next:
             skip_next = False
